@@ -28,7 +28,7 @@ Cada red social ofrece nivel gratuito para desarrollo:
 
 | No. | Descripción                                                                 | Potenciador | Estatus          |
 |-----|-----------------------------------------------------------------------------|-------------|------------------|
-| 1   | Gestionar la solicitud individual de las 3 API Keys                        | 6           |    |
+| 1   | Gestionar la solicitud individual de las 3 API Keys                        | 6           |  Finalizado. ✅  |
 | 2   | Consultar los endpoints disponibles y documentar al menos 20 en README.md  | 10          |         |
 | 3   | Desarrollo de la Landing Page para consulta de APIs                        | 10          | Finalizado. ✅   |
 | 4   | Desarrollo de la página de API para realizar pagos                         | 10          | Finalizado. ✅        |
