@@ -34,7 +34,7 @@ Cada red social ofrece nivel gratuito para desarrollo:
 | 4   | Desarrollo de la página de API para realizar pagos                         | 10          |    Finalizado. ✅     |
 | 5   | Desarrollo de la página de API para uso de IA Generativa                   | 10          |    Finalizado. ✅    |
 | 6   | Desarrollo de la página de API para planeación de actividades              | 10          |      Finalizado. ✅   |
-| 7   | Implementación del código Front End                                        | 10          |         |
+| 7   | Implementación del código Front End                                        | 10          |     Finalizado. ✅    |
 | 8   | Implementación del código Back End                                         | 10          |         |
 | 9   | Pruebas del sistema y documentación de 5 resultados con capturas           | 10          |         |
 | 10  | Documentación completa del proyecto en GitHub (README.md)                  | 10          |         |
