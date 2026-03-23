@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | Padlet</title>
+    <link href="/css/output.css" rel="stylesheet">
+</head>
+<body class="font-sans antialiased min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50">
+    <%- include('partials/header') %>
+
+    <main class="pt-32 pb-20">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h1 class="text-5xl font-display font-bold text-padlet mb-4">Padlet</h1>
+                <p class="text-lg text-gray-600">Tableros colaborativos para compartir ideas</p>
+            </div>
+
+            <% if (error) { %>
+                <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-6">
+                    <p><%= error %></p>
+                </div>
+            <% } %>
+
+            <!-- Información del tablero -->
+            <div class="card mb-8">
+                <h2 class="text-2xl font-bold text-padlet mb-2"><%= board.title %></h2>
+                <p class="text-gray-600"><%= board.description || 'Comparte tus ideas aquí' %></p>
+                <p class="text-sm text-gray-500 mt-2"><%= posts.length %> publicaciones</p>
+            </div>
+
+            <!-- Formulario para crear publicación -->
+            <div class="card mb-8">
+                <h2 class="text-xl font-bold text-padlet mb-4">Crear nueva publicación</h2>
+                <form id="post-form" class="space-y-4">
+                    <input type="text" id="subject" placeholder="Título (opcional)" class="w-full border rounded-xl p-3">
+                    <textarea id="content" rows="3" placeholder="Contenido (opcional)" class="w-full border rounded-xl p-3"></textarea>
+                    <input type="url" id="attachment_url" placeholder="URL de imagen (opcional)" class="w-full border rounded-xl p-3">
+                    <button type="submit" class="bg-padlet text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+                        Publicar en el muro
+                    </button>
+                </form>
+                <div id="post-result" class="mt-4"></div>
+            </div>
+
+            <!-- Lista de publicaciones -->
+            <div class="card">
+                <h2 class="text-xl font-bold text-padlet mb-4">Publicaciones</h2>
+                <div id="posts-list" class="space-y-4">
+                    <% if (posts && posts.length > 0) { %>
+                        <% posts.forEach(post => { %>
+                            <div class="bg-white/50 rounded-xl p-4 shadow">
+                                <% if (post.subject) { %>
+                                    <h3 class="font-bold text-padlet"><%= post.subject %></h3>
+                                <% } %>
+                                <% if (post.body) { %>
+                                    <p class="text-gray-800 mt-2"><%= post.body %></p>
+                                <% } %>
+                                <% if (post.attachment && post.attachment.url) { %>
+                                    <img src="<%= post.attachment.url %>" class="mt-2 max-h-48 rounded-lg">
+                                <% } %>
+                                <p class="text-xs text-gray-500 mt-2"><%= new Date(post.created_at).toLocaleString() %></p>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p class="text-gray-500 text-center">No hay publicaciones aún. ¡Sé el primero en publicar!</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        const form = document.getElementById('post-form');
+        const resultDiv = document.getElementById('post-result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const subject = document.getElementById('subject').value;
+            const content = document.getElementById('content').value;
+            const attachment_url = document.getElementById('attachment_url').value;
+
+            if (!subject && !content && !attachment_url) {
+                resultDiv.innerHTML = '<div class="bg-yellow-100 text-yellow-700 p-3 rounded">Debes llenar al menos un campo</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="text-gray-500">Publicando...</div>';
+
+            try {
+                const response = await fetch('/padlet/create-post', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subject, content, attachment_url })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = '<div class="bg-green-100 text-green-700 p-3 rounded">✅ ' + data.message + '</div>';
+                    document.getElementById('subject').value = '';
+                    document.getElementById('content').value = '';
+                    document.getElementById('attachment_url').value = '';
+                    
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    resultDiv.innerHTML = `<div class="bg-red-100 text-red-700 p-3 rounded">❌ Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="bg-red-100 text-red-700 p-3 rounded">❌ Error al conectar con el servidor</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

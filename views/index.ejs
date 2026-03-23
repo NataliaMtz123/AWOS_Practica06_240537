@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | Proyecto 3 APIs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/css/output.css" rel="stylesheet">
+    <style>
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 158, 227, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(123, 104, 238, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(16, 163, 127, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-white">
+    <%- include('partials/header') %>
+
+    <main class="pt-32 pb-20">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                    Proyecto 3 APIs
+                </h1>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Integración de Mercado Pago, Padlet y Hugging Face IA
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Mercado Pago Card -->
+                <div class="card cursor-pointer hover:-translate-y-2" onclick="location.href='/pago'">
+                    <div class="bg-azul-mercado/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+                        <span class="text-3xl">💳</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-azul-mercado mb-3">Mercado Pago</h2>
+                    <p class="text-gray-600">Integración de pagos con PIX y tarjeta de crédito. Genera pagos y recibe notificaciones en tiempo real.</p>
+                </div>
+
+                <!-- Padlet Card -->
+                <div class="card cursor-pointer hover:-translate-y-2" onclick="location.href='/padlet'">
+                    <div class="bg-padlet/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+                        <span class="text-3xl">📋</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-padlet mb-3">Padlet</h2>
+                    <p class="text-gray-600">Gestión de tableros colaborativos. Crea y administra contenido multimedia en tiempo real.</p>
+                </div>
+
+                <!-- IA Card -->
+                <div class="card cursor-pointer hover:-translate-y-2" onclick="location.href='/ia'">
+                    <div class="bg-ia/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+                        <span class="text-3xl">🤖</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-ia mb-3">Hugging Face IA</h2>
+                    <p class="text-gray-600">Generación de texto, análisis de sentimientos y clasificación con modelos de IA pre-entrenados.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>
