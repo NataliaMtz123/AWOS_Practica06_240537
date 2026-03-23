@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | Google Gemini</title>
+    <link href="/css/output.css" rel="stylesheet">
+</head>
+<body class="font-sans antialiased min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+    <%- include('partials/header') %>
+
+    <main class="pt-32 pb-20">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <div class="text-center mb-12">
+                <h1 class="text-5xl font-display font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                    Google Gemini AI
+                </h1>
+                <p class="text-lg text-gray-600">Generación de texto, análisis de sentimientos y resúmenes</p>
+            </div>
+
+            <!-- Generación de texto -->
+            <div class="card mb-8">
+                <h2 class="text-2xl font-bold text-purple-600 mb-4 flex items-center">
+                    <span class="bg-purple-600 text-white p-2 rounded-lg mr-3">🤖</span>
+                    Generar Texto
+                </h2>
+                <textarea id="prompt" rows="3" class="w-full border rounded-xl p-3 mb-4" placeholder="Escribe un prompt... Ej: Escribe un poema sobre la inteligencia artificial"></textarea>
+                <button id="generate-btn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Generar</button>
+                <div id="generate-result" class="mt-4 hidden">
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <p class="text-gray-800" id="generated-text"></p>
+                    </div>
+                </div>
+                <div id="generate-loading" class="hidden text-center py-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+                    <p class="mt-2 text-gray-600">Generando con Gemini...</p>
+                </div>
+            </div>
+
+            <!-- Análisis de sentimientos -->
+            <div class="card mb-8">
+                <h2 class="text-2xl font-bold text-purple-600 mb-4 flex items-center">
+                    <span class="bg-purple-600 text-white p-2 rounded-lg mr-3">😊</span>
+                    Análisis de Sentimientos
+                </h2>
+                <textarea id="sentiment-text" rows="3" class="w-full border rounded-xl p-3 mb-4" placeholder="Escribe un texto para analizar... Ej: ¡Me encanta este proyecto!"></textarea>
+                <button id="analyze-btn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Analizar</button>
+                <div id="sentiment-result" class="mt-4 hidden">
+                    <div class="rounded-xl p-4" id="sentiment-box"></div>
+                </div>
+                <div id="sentiment-loading" class="hidden text-center py-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+                    <p class="mt-2 text-gray-600">Analizando con Gemini...</p>
+                </div>
+            </div>
+
+            <!-- Resumen de texto -->
+            <div class="card">
+                <h2 class="text-2xl font-bold text-purple-600 mb-4 flex items-center">
+                    <span class="bg-purple-600 text-white p-2 rounded-lg mr-3">📝</span>
+                    Resumen de Texto
+                </h2>
+                <textarea id="summary-text" rows="5" class="w-full border rounded-xl p-3 mb-4" placeholder="Pega un texto largo para resumir..."></textarea>
+                <button id="summarize-btn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Resumir</button>
+                <div id="summary-result" class="mt-4 hidden">
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <p class="text-gray-800 font-semibold mb-2">Resumen:</p>
+                        <p class="text-gray-700" id="summary-text-result"></p>
+                    </div>
+                </div>
+                <div id="summary-loading" class="hidden text-center py-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+                    <p class="mt-2 text-gray-600">Resumiendo con Gemini...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // Generar texto
+        const generateBtn = document.getElementById('generate-btn');
+        const generateResult = document.getElementById('generate-result');
+        const generatedText = document.getElementById('generated-text');
+        const generateLoading = document.getElementById('generate-loading');
+
+        generateBtn.addEventListener('click', async () => {
+            const prompt = document.getElementById('prompt').value;
+            if (!prompt.trim()) return;
+
+            generateLoading.classList.remove('hidden');
+            generateResult.classList.add('hidden');
+
+            const response = await fetch('/ia/generate-text', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            const data = await response.json();
+
+            generateLoading.classList.add('hidden');
+            if (data.success) {
+                generatedText.textContent = data.generated_text;
+                generateResult.classList.remove('hidden');
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+
+        // Analizar sentimiento
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const sentimentResult = document.getElementById('sentiment-result');
+        const sentimentBox = document.getElementById('sentiment-box');
+        const sentimentLoading = document.getElementById('sentiment-loading');
+
+        analyzeBtn.addEventListener('click', async () => {
+            const text = document.getElementById('sentiment-text').value;
+            if (!text.trim()) return;
+
+            sentimentLoading.classList.remove('hidden');
+            sentimentResult.classList.add('hidden');
+
+            const response = await fetch('/ia/sentiment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            const data = await response.json();
+
+            sentimentLoading.classList.add('hidden');
+            if (data.success) {
+                const isPositive = data.sentiment === 'POSITIVE';
+                sentimentBox.className = `rounded-xl p-4 ${isPositive ? 'bg-green-100 text-green-700' : (data.sentiment === 'NEGATIVE' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700')}`;
+                sentimentBox.innerHTML = `
+                    <p class="font-bold">Sentimiento: ${data.sentiment}</p>
+                    <p class="text-sm">Confianza: ${(data.score * 100).toFixed(1)}%</p>
+                `;
+                sentimentResult.classList.remove('hidden');
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+
+        // Resumir texto
+        const summarizeBtn = document.getElementById('summarize-btn');
+        const summaryResult = document.getElementById('summary-result');
+        const summaryTextResult = document.getElementById('summary-text-result');
+        const summaryLoading = document.getElementById('summary-loading');
+
+        summarizeBtn.addEventListener('click', async () => {
+            const text = document.getElementById('summary-text').value;
+            if (!text.trim()) return;
+
+            summaryLoading.classList.remove('hidden');
+            summaryResult.classList.add('hidden');
+
+            const response = await fetch('/ia/summarize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            const data = await response.json();
+
+            summaryLoading.classList.add('hidden');
+            if (data.success) {
+                summaryTextResult.textContent = data.summary;
+                summaryResult.classList.remove('hidden');
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    </script>
+</body>
+</html>
