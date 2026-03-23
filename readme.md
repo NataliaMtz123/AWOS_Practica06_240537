@@ -30,8 +30,8 @@ Cada red social ofrece nivel gratuito para desarrollo:
 |-----|-----------------------------------------------------------------------------|-------------|------------------|
 | 1   | Gestionar la solicitud individual de las 3 API Keys                        | 6           |  Finalizado. ✅  |
 | 2   | Consultar los endpoints disponibles y documentar al menos 20 en README.md  | 10          |    Finalizado. ✅     |
-| 3   | Desarrollo de la Landing Page para consulta de APIs                        | 10          |    |
-| 4   | Desarrollo de la página de API para realizar pagos                         | 10          |         |
+| 3   | Desarrollo de la Landing Page para consulta de APIs                        | 10          |   Finalizado. ✅ |
+| 4   | Desarrollo de la página de API para realizar pagos                         | 10          |    Finalizado. ✅     |
 | 5   | Desarrollo de la página de API para uso de IA Generativa                   | 10          |        |
 | 6   | Desarrollo de la página de API para planeación de actividades              | 10          |         |
 | 7   | Implementación del código Front End                                        | 10          | Finalizado. ✅        |
