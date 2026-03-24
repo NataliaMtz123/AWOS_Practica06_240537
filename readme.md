@@ -3,6 +3,7 @@
 ## Objetivo
 Implementar el consumo de APIs externas mediante una aplicación que permita integrar servicios de Inteligencia Artificial, pagos en línea y colaboración digital, utilizando los endpoints de IA, Mercado Pago y Padlet
 
+---
 
 ## Tecnologías
 - Node.js + Express
@@ -10,15 +11,21 @@ Implementar el consumo de APIs externas mediante una aplicación que permita int
 - Tailwind CSS 3.x
 - EJS templates
 
+---
+
 ## Configuración
 
-1. Clonar repositorio
-2. `npm install`
-3. Configurar archivo `.env` con las API keys
-4. `npm run dev` y `npm run watch:css`
+- Clonar repositorio
+- `npm install`
+- Configurar archivo `.env` con las API keys
+- `npm run dev` y `npm run watch:css`
+
+---
 
 ## API Keys Gratuitas
 Cada red social ofrece nivel gratuito para desarrollo:
+
+---
 
 ## Actividades
 
@@ -38,6 +45,8 @@ Cada red social ofrece nivel gratuito para desarrollo:
 | 8   | Implementación del código Back End                                         | 10          |      Finalizado. ✅   |
 | 9   | Pruebas del sistema y documentación de 5 resultados con capturas           | 10          |    Finalizado. ✅     |
 | 10  | Documentación completa del proyecto en GitHub (README.md)                  | 10          |       Finalizado. ✅  |
+
+---
 
 ## Exploración de Endpoints
 
@@ -66,6 +75,8 @@ Cada red social ofrece nivel gratuito para desarrollo:
 | OpenAI | /v1/batches/{batch_id}      | Consulta estado de un batch               | batch_id                     |
 | OpenAI | /v1/assistants              | Crea asistentes personalizados            | model, instructions          |
 
+---
+
 ## API de Mercado Pago
 
 | API         | Endpoint                           | Descripción               | Parámetros                |
@@ -90,6 +101,8 @@ Cada red social ofrece nivel gratuito para desarrollo:
 | MercadoPago | /v1/users/me                       | Información del usuario   | none                      |
 | MercadoPago | /v1/account/bank_report            | Reporte bancario          | date_from                 |
 | MercadoPago | /v1/charges                        | Crear cargo directo       | amount                    |
+
+---
 
 ## API de Padlet
 
@@ -116,35 +129,84 @@ Cada red social ofrece nivel gratuito para desarrollo:
 | Padlet | /api/tags             | Listar etiquetas           | none               |
 | Padlet | /api/tags/{id}        | Obtener etiqueta           | id                 |
 
+---
 
-
-
-## Evidencias
+## Evidencias del uso de la apliacacion web
+### Evidencia 1: Pagina de inicio con las 3 apis disponibles
+### Resultado: Exitoso se abrio la pagina sin problema
 
 ![Evidencia 1](/imagenes/ev1.png)
 
+### Evidencia de la pagina de Google Gemmini en donde se tiene varias opciones
+### Resultado: Exitoso se abrio la pagina sin problema
+
+![Evidencia 2](/imagenes/ev22.png)
+#### Contar un chiste
+### Resultado: Se genero el chiste sin problema
+
 ![Evidencia 2](/imagenes/ev2.png)
+#### Detectar emociones
+### Resultado: Se genero el resultado sin problema
 
 ![Evidencia 3](/imagenes/ev3.png)
+#### Resumir textos
+### Resultado: Se resumieron los textos sin problemas
 
 ![Evidencia 4](/imagenes/ev4.png)
 
+### Pagina de inicio para añadir una nueva publicacion
+### Resultado: Exitoso se abrio la pagina sin problema
+
 ![Evidencia 5](/imagenes/ev5.png)
+### Evidencia de publicacion creada exitosamente
+### Resultado: Se agrego una nueva publicacion sin problema
 
 ![Evidencia 6](/imagenes/ev6.png)
+### Pagina de inicio de mercado pago 
+### Resultado: Exitoso se abrio la pagina sin problema
 
 ![Evidencia 7](/imagenes/ev7.png)
+### API consumida para realizar un pago
+### Resultado: Se consumio la API sin problema
 
 ![Evidencia 8](/imagenes/ev8.png)
 
-![Evidencia 9](/imagenes/ev9.png)
-
-![Evidencia 10](/imagenes/ev10.png)
 
 
+---
 
 ## Consideraciones de Seguridad
 - Nunca comitar archivos `.env`
 - Usar `http://localhost` en desarrollo
 - Configurar callbacks correctamente
 - Limitar scopes a lo necesario.
+
+---
+# 📌 Conclusión
+
+El desarrollo de esta práctica permitió aplicar de manera exitosa los conceptos fundamentales del consumo de APIs en plataformas online, integrando tres servicios distintos: Pagos, IA Generativa y Planeación de Actividades. A través de una arquitectura MVC con Node.js, Express y MySQL, se logró construir una aplicación web funcional, segura y escalable.
+
+## ✅ Resultados Alcanzados
+
+- **Gestión de API Keys:** Se solicitaron y gestionaron correctamente las tres claves de acceso requeridas.
+- **Consumo de Endpoints:** Se documentaron más de 20 endpoints disponibles en las APIs consumidas.
+- **Seguridad:** Se implementó bloqueo de cuenta tras 5 intentos fallidos, envío de código de desbloqueo por correo y encriptación de contraseñas con bcrypt.
+- **Interfaz de Usuario:** Se desarrolló una landing page interactiva que permite consultar cada una de las APIs integradas.
+- **Documentación:** Se elaboró documentación completa en formato Markdown, incluyendo pruebas y capturas de pantalla.
+
+## 🎯 Objetivos Cumplidos
+
+✓ Desarrollo de aplicación web con autenticación de usuarios  
+✓ Consumo exitoso de tres APIs diferentes  
+✓ Implementación de sistema de seguridad robusto  
+✓ Pruebas documentadas con resultados positivos  
+✓ Código modular y siguiendo buenas prácticas
+
+## 💡 Aprendizajes Clave
+
+- Consumo de APIs REST (métodos HTTP, autenticación, manejo de errores)
+- Implementación de medidas de seguridad en aplicaciones web
+- Aplicación del patrón MVC en proyectos reales
+- Integración frontend-backend con Pug y Express
+- Documentación técnica estructurada y clara
+
