@@ -4,172 +4,353 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %> | Google Gemini</title>
-    <link href="/css/output.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7f7f7;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+        
+        .result h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .result pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: inherit;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(102,126,234,0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .sentiment-positive {
+            background: #d4edda;
+            color: #155724;
+            border-left-color: #28a745;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .sentiment-negative {
+            background: #f8d7da;
+            color: #721c24;
+            border-left-color: #dc3545;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .sentiment-neutral {
+            background: #fff3cd;
+            color: #856404;
+            border-left-color: #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+        }
+    </style>
 </head>
-<body class="font-sans antialiased min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-    <%- include('partials/header') %>
-
-    <main class="pt-32 pb-20">
-        <div class="container mx-auto px-6 max-w-4xl">
-            <div class="text-center mb-12">
-                <h1 class="text-5xl font-display font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                    Google Gemini AI
-                </h1>
-                <p class="text-lg text-gray-600">Generación de texto, análisis de sentimientos y resúmenes</p>
+<body>
+    <div class="container">
+        <h1>🤖 <%= title %></h1>
+        <div class="subtitle">Generación de texto, análisis de sentimientos y resúmenes con inteligencia artificial</div>
+        
+        <!-- Generación de texto -->
+        <div class="card">
+            <h2>📝 Generar Texto</h2>
+            <textarea id="prompt" rows="3" placeholder="Escribe un prompt... Ej: Escribe un poema sobre la inteligencia artificial"></textarea>
+            <button onclick="generateText()">Generar</button>
+            <div id="generate-loading" class="loading">
+                <div class="spinner"></div>
+                <p>Generando con Gemini...</p>
             </div>
-
-            <!-- Generación de texto -->
-            <div class="card mb-8">
-                <h2 class="text-2xl font-bold text-purple-600 mb-4 flex items-center">
-                    <span class="bg-purple-600 text-white p-2 rounded-lg mr-3">🤖</span>
-                    Generar Texto
-                </h2>
-                <textarea id="prompt" rows="3" class="w-full border rounded-xl p-3 mb-4" placeholder="Escribe un prompt... Ej: Escribe un poema sobre la inteligencia artificial"></textarea>
-                <button id="generate-btn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Generar</button>
-                <div id="generate-result" class="mt-4 hidden">
-                    <div class="bg-gray-50 rounded-xl p-4">
-                        <p class="text-gray-800" id="generated-text"></p>
-                    </div>
-                </div>
-                <div id="generate-loading" class="hidden text-center py-4">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
-                    <p class="mt-2 text-gray-600">Generando con Gemini...</p>
-                </div>
-            </div>
-
-            <!-- Análisis de sentimientos -->
-            <div class="card mb-8">
-                <h2 class="text-2xl font-bold text-purple-600 mb-4 flex items-center">
-                    <span class="bg-purple-600 text-white p-2 rounded-lg mr-3">😊</span>
-                    Análisis de Sentimientos
-                </h2>
-                <textarea id="sentiment-text" rows="3" class="w-full border rounded-xl p-3 mb-4" placeholder="Escribe un texto para analizar... Ej: ¡Me encanta este proyecto!"></textarea>
-                <button id="analyze-btn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Analizar</button>
-                <div id="sentiment-result" class="mt-4 hidden">
-                    <div class="rounded-xl p-4" id="sentiment-box"></div>
-                </div>
-                <div id="sentiment-loading" class="hidden text-center py-4">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
-                    <p class="mt-2 text-gray-600">Analizando con Gemini...</p>
-                </div>
-            </div>
-
-            <!-- Resumen de texto -->
-            <div class="card">
-                <h2 class="text-2xl font-bold text-purple-600 mb-4 flex items-center">
-                    <span class="bg-purple-600 text-white p-2 rounded-lg mr-3">📝</span>
-                    Resumen de Texto
-                </h2>
-                <textarea id="summary-text" rows="5" class="w-full border rounded-xl p-3 mb-4" placeholder="Pega un texto largo para resumir..."></textarea>
-                <button id="summarize-btn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Resumir</button>
-                <div id="summary-result" class="mt-4 hidden">
-                    <div class="bg-gray-50 rounded-xl p-4">
-                        <p class="text-gray-800 font-semibold mb-2">Resumen:</p>
-                        <p class="text-gray-700" id="summary-text-result"></p>
-                    </div>
-                </div>
-                <div id="summary-loading" class="hidden text-center py-4">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
-                    <p class="mt-2 text-gray-600">Resumiendo con Gemini...</p>
-                </div>
+            <div id="generate-result" class="result">
+                <h3>Texto Generado:</h3>
+                <pre id="generated-text"></pre>
             </div>
         </div>
-    </main>
-
-    <%- include('partials/footer') %>
-
+        
+        <!-- Análisis de sentimientos -->
+        <div class="card">
+            <h2>😊 Análisis de Sentimientos</h2>
+            <textarea id="sentiment-text" rows="3" placeholder="Escribe un texto para analizar... Ej: ¡Me encanta este proyecto!"></textarea>
+            <button onclick="analyzeSentiment()">Analizar</button>
+            <div id="sentiment-loading" class="loading">
+                <div class="spinner"></div>
+                <p>Analizando con Gemini...</p>
+            </div>
+            <div id="sentiment-result" class="result">
+                <div id="sentiment-box"></div>
+            </div>
+        </div>
+        
+        <!-- Resumen de texto -->
+        <div class="card">
+            <h2>📄 Resumen de Texto</h2>
+            <textarea id="summary-text" rows="5" placeholder="Pega un texto largo para resumir..."></textarea>
+            <button onclick="summarizeText()">Resumir</button>
+            <div id="summary-loading" class="loading">
+                <div class="spinner"></div>
+                <p>Resumiendo con Gemini...</p>
+            </div>
+            <div id="summary-result" class="result">
+                <h3>Resumen:</h3>
+                <p id="summary-text-result"></p>
+            </div>
+        </div>
+        
+        <a href="/" class="back-link">← Volver al inicio</a>
+    </div>
+    
     <script>
-        // Generar texto
-        const generateBtn = document.getElementById('generate-btn');
-        const generateResult = document.getElementById('generate-result');
-        const generatedText = document.getElementById('generated-text');
-        const generateLoading = document.getElementById('generate-loading');
-
-        generateBtn.addEventListener('click', async () => {
+        async function generateText() {
             const prompt = document.getElementById('prompt').value;
-            if (!prompt.trim()) return;
-
-            generateLoading.classList.remove('hidden');
-            generateResult.classList.add('hidden');
-
-            const response = await fetch('/ia/generate-text', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt })
-            });
-            const data = await response.json();
-
-            generateLoading.classList.add('hidden');
-            if (data.success) {
-                generatedText.textContent = data.generated_text;
-                generateResult.classList.remove('hidden');
-            } else {
-                alert('Error: ' + data.error);
+            if (!prompt.trim()) {
+                alert('Por favor ingresa un prompt');
+                return;
             }
-        });
-
-        // Analizar sentimiento
-        const analyzeBtn = document.getElementById('analyze-btn');
-        const sentimentResult = document.getElementById('sentiment-result');
-        const sentimentBox = document.getElementById('sentiment-box');
-        const sentimentLoading = document.getElementById('sentiment-loading');
-
-        analyzeBtn.addEventListener('click', async () => {
+            
+            const resultDiv = document.getElementById('generate-result');
+            const loadingDiv = document.getElementById('generate-loading');
+            const generatedText = document.getElementById('generated-text');
+            
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            try {
+                console.log('Enviando prompt:', prompt);
+                
+                const response = await fetch('/ia/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                
+                const data = await response.json();
+                console.log('Respuesta:', data);
+                
+                loadingDiv.style.display = 'none';
+                
+                if (data.success) {
+                    generatedText.textContent = data.generated_text;
+                    resultDiv.style.display = 'block';
+                } else {
+                    alert('Error: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                loadingDiv.style.display = 'none';
+                alert('Error de conexión: ' + error.message);
+            }
+        }
+        
+        async function analyzeSentiment() {
             const text = document.getElementById('sentiment-text').value;
-            if (!text.trim()) return;
-
-            sentimentLoading.classList.remove('hidden');
-            sentimentResult.classList.add('hidden');
-
-            const response = await fetch('/ia/sentiment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
-            });
-            const data = await response.json();
-
-            sentimentLoading.classList.add('hidden');
-            if (data.success) {
-                const isPositive = data.sentiment === 'POSITIVE';
-                sentimentBox.className = `rounded-xl p-4 ${isPositive ? 'bg-green-100 text-green-700' : (data.sentiment === 'NEGATIVE' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700')}`;
-                sentimentBox.innerHTML = `
-                    <p class="font-bold">Sentimiento: ${data.sentiment}</p>
-                    <p class="text-sm">Confianza: ${(data.score * 100).toFixed(1)}%</p>
-                `;
-                sentimentResult.classList.remove('hidden');
-            } else {
-                alert('Error: ' + data.error);
+            if (!text.trim()) {
+                alert('Por favor ingresa un texto para analizar');
+                return;
             }
-        });
-
-        // Resumir texto
-        const summarizeBtn = document.getElementById('summarize-btn');
-        const summaryResult = document.getElementById('summary-result');
-        const summaryTextResult = document.getElementById('summary-text-result');
-        const summaryLoading = document.getElementById('summary-loading');
-
-        summarizeBtn.addEventListener('click', async () => {
+            
+            const resultDiv = document.getElementById('sentiment-result');
+            const loadingDiv = document.getElementById('sentiment-loading');
+            const sentimentBox = document.getElementById('sentiment-box');
+            
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            try {
+                console.log('Enviando texto:', text);
+                
+                const response = await fetch('/ia/api/sentiment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                const data = await response.json();
+                console.log('Respuesta:', data);
+                
+                loadingDiv.style.display = 'none';
+                
+                if (data.success) {
+                    let sentimentClass = '';
+                    if (data.sentiment === 'POSITIVE') sentimentClass = 'sentiment-positive';
+                    else if (data.sentiment === 'NEGATIVE') sentimentClass = 'sentiment-negative';
+                    else sentimentClass = 'sentiment-neutral';
+                    
+                    sentimentBox.className = sentimentClass;
+                    sentimentBox.innerHTML = `
+                        <p><strong>Sentimiento:</strong> ${data.sentiment}</p>
+                        <p><strong>Confianza:</strong> ${data.confidence || (data.score * 100).toFixed(1)}%</p>
+                        ${data.explanation ? `<p><strong>Explicación:</strong> ${data.explanation}</p>` : ''}
+                    `;
+                    resultDiv.style.display = 'block';
+                } else {
+                    alert('Error: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                loadingDiv.style.display = 'none';
+                alert('Error de conexión: ' + error.message);
+            }
+        }
+        
+        async function summarizeText() {
             const text = document.getElementById('summary-text').value;
-            if (!text.trim()) return;
-
-            summaryLoading.classList.remove('hidden');
-            summaryResult.classList.add('hidden');
-
-            const response = await fetch('/ia/summarize', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
-            });
-            const data = await response.json();
-
-            summaryLoading.classList.add('hidden');
-            if (data.success) {
-                summaryTextResult.textContent = data.summary;
-                summaryResult.classList.remove('hidden');
-            } else {
-                alert('Error: ' + data.error);
+            if (!text.trim()) {
+                alert('Por favor ingresa un texto para resumir');
+                return;
             }
-        });
+            
+            const resultDiv = document.getElementById('summary-result');
+            const loadingDiv = document.getElementById('summary-loading');
+            const summaryText = document.getElementById('summary-text-result');
+            
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            try {
+                console.log('Enviando texto a resumir, longitud:', text.length);
+                
+                const response = await fetch('/ia/api/summarize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                const data = await response.json();
+                console.log('Respuesta:', data);
+                
+                loadingDiv.style.display = 'none';
+                
+                if (data.success) {
+                    summaryText.textContent = data.summary;
+                    resultDiv.style.display = 'block';
+                } else {
+                    alert('Error: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                loadingDiv.style.display = 'none';
+                alert('Error de conexión: ' + error.message);
+            }
+        }
     </script>
 </body>
 </html>

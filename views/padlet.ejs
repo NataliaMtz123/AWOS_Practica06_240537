@@ -3,116 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> | Padlet</title>
-    <link href="/css/output.css" rel="stylesheet">
+    <title><%= title %></title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 40px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: white; text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 40px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .card h2 { color: #667eea; margin-bottom: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; font-family: inherit; }
+        textarea { resize: vertical; }
+        button { background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; transition: all 0.3s; width: 100%; margin-bottom: 10px; }
+        button:hover { background: #5a67d8; transform: translateY(-2px); }
+        .view-board { background: #48bb78; }
+        .view-board:hover { background: #38a169; }
+        .message { padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; }
+        .message.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; display: block; }
+        .message.error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; display: block; }
+        .loading { display: none; text-align: center; margin-top: 15px; color: #667eea; }
+        .spinner { display: inline-block; width: 40px; height: 40px; border: 3px solid rgba(102,126,234,0.3); border-radius: 50%; border-top-color: #667eea; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .info-box { background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea; }
+        .post { background: #f7f7f7; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #667eea; }
+        .post h3 { color: #333; margin-bottom: 10px; }
+        .post p { color: #666; line-height: 1.6; }
+        .post img { max-width: 100%; border-radius: 6px; margin-top: 10px; }
+        .post small { color: #999; display: block; margin-top: 10px; }
+        .posts-list { max-height: 500px; overflow-y: auto; }
+        .back-link { display: inline-block; margin-top: 20px; color: white; text-decoration: none; padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 6px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
-<body class="font-sans antialiased min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50">
-    <%- include('partials/header') %>
-
-    <main class="pt-32 pb-20">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h1 class="text-5xl font-display font-bold text-padlet mb-4">Padlet</h1>
-                <p class="text-lg text-gray-600">Tableros colaborativos para compartir ideas</p>
-            </div>
-
-            <% if (error) { %>
-                <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-6">
-                    <p><%= error %></p>
-                </div>
-            <% } %>
-
-            <!-- Información del tablero -->
-            <div class="card mb-8">
-                <h2 class="text-2xl font-bold text-padlet mb-2"><%= board.title %></h2>
-                <p class="text-gray-600"><%= board.description || 'Comparte tus ideas aquí' %></p>
-                <p class="text-sm text-gray-500 mt-2"><%= posts.length %> publicaciones</p>
-            </div>
-
+<body>
+    <div class="container">
+        <h1>📌 <%= title %></h1>
+        <div class="subtitle">Conecta con tu tablero de Padlet</div>
+        
+        <div class="grid">
             <!-- Formulario para crear publicación -->
-            <div class="card mb-8">
-                <h2 class="text-xl font-bold text-padlet mb-4">Crear nueva publicación</h2>
-                <form id="post-form" class="space-y-4">
-                    <input type="text" id="subject" placeholder="Título (opcional)" class="w-full border rounded-xl p-3">
-                    <textarea id="content" rows="3" placeholder="Contenido (opcional)" class="w-full border rounded-xl p-3"></textarea>
-                    <input type="url" id="attachment_url" placeholder="URL de imagen (opcional)" class="w-full border rounded-xl p-3">
-                    <button type="submit" class="bg-padlet text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
-                        Publicar en el muro
-                    </button>
-                </form>
-                <div id="post-result" class="mt-4"></div>
+            <div class="card">
+                <h2>➕ Crear nueva publicación</h2>
+                
+                <div class="info-box">
+                    <h3>ℹ️ Información</h3>
+                    <p>Tu tablero de Padlet está disponible en:</p>
+                    <a href="https://padlet.com/embed/<%= boardId %>" target="_blank" class="board-link" style="display: inline-block; margin-top: 10px; background: #667eea; color: white; padding: 8px 16px; text-decoration: none; border-radius: 5px;">
+                        🔗 Ver tablero en Padlet
+                    </a>
+                </div>
+                
+                <div id="message" class="message"></div>
+                
+                <input type="text" id="post-title" placeholder="Título de la publicación">
+                <textarea id="post-content" rows="4" placeholder="Contenido de la publicación..."></textarea>
+                <input type="text" id="post-image" placeholder="URL de imagen (opcional)">
+                <button onclick="createPost()">📤 Publicar en el muro</button>
+                <button onclick="openPadlet()" class="view-board">🔗 Abrir tablero en Padlet</button>
+                <button onclick="loadPosts()" style="background: #48bb78;">🔄 Actualizar publicaciones</button>
+                
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Procesando...</p>
+                </div>
             </div>
-
+            
             <!-- Lista de publicaciones -->
             <div class="card">
-                <h2 class="text-xl font-bold text-padlet mb-4">Publicaciones</h2>
-                <div id="posts-list" class="space-y-4">
+                <h2>📋 Publicaciones (<span id="post-count"><%= posts.length %></span>)</h2>
+                <div id="posts-list" class="posts-list">
                     <% if (posts && posts.length > 0) { %>
                         <% posts.forEach(post => { %>
-                            <div class="bg-white/50 rounded-xl p-4 shadow">
-                                <% if (post.subject) { %>
-                                    <h3 class="font-bold text-padlet"><%= post.subject %></h3>
+                            <div class="post">
+                                <h3><%= post.title || 'Sin título' %></h3>
+                                <p><%= post.body || 'Sin contenido' %></p>
+                                <% if (post.attachment) { %>
+                                    <img src="<%= post.attachment %>" alt="Imagen adjunta" onerror="this.style.display='none'">
                                 <% } %>
-                                <% if (post.body) { %>
-                                    <p class="text-gray-800 mt-2"><%= post.body %></p>
+                                <small>📅 <%= new Date(post.created_at).toLocaleString() %></small>
+                                <% if (post.is_local) { %>
+                                    <small style="color: #667eea;"> 💾 Guardado localmente</small>
                                 <% } %>
-                                <% if (post.attachment && post.attachment.url) { %>
-                                    <img src="<%= post.attachment.url %>" class="mt-2 max-h-48 rounded-lg">
-                                <% } %>
-                                <p class="text-xs text-gray-500 mt-2"><%= new Date(post.created_at).toLocaleString() %></p>
                             </div>
-                        <% }); %>
+                        <% }) %>
                     <% } else { %>
-                        <p class="text-gray-500 text-center">No hay publicaciones aún. ¡Sé el primero en publicar!</p>
+                        <p style="text-align: center; color: #999; padding: 40px;">
+                            No hay publicaciones aún. ¡Crea tu primera publicación!
+                        </p>
                     <% } %>
                 </div>
             </div>
         </div>
-    </main>
-
-    <%- include('partials/footer') %>
-
+        
+        <a href="/" class="back-link">← Volver al inicio</a>
+    </div>
+    
     <script>
-        const form = document.getElementById('post-form');
-        const resultDiv = document.getElementById('post-result');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        async function createPost() {
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const imageUrl = document.getElementById('post-image').value;
             
-            const subject = document.getElementById('subject').value;
-            const content = document.getElementById('content').value;
-            const attachment_url = document.getElementById('attachment_url').value;
-
-            if (!subject && !content && !attachment_url) {
-                resultDiv.innerHTML = '<div class="bg-yellow-100 text-yellow-700 p-3 rounded">Debes llenar al menos un campo</div>';
+            if (!title.trim() && !content.trim() && !imageUrl.trim()) {
+                showMessage('Por favor, completa al menos un campo (título, contenido o imagen)', 'error');
                 return;
             }
-
-            resultDiv.innerHTML = '<div class="text-gray-500">Publicando...</div>';
-
+            
+            const loading = document.getElementById('loading');
+            const messageDiv = document.getElementById('message');
+            
+            loading.style.display = 'block';
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'none';
+            
             try {
-                const response = await fetch('/padlet/create-post', {
+                const response = await fetch('/padlet/api/posts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ subject, content, attachment_url })
+                    body: JSON.stringify({
+                        subject: title,
+                        content: content,
+                        attachment_url: imageUrl
+                    })
                 });
-
+                
                 const data = await response.json();
-
+                console.log('Respuesta:', data);
+                
+                loading.style.display = 'none';
+                
                 if (data.success) {
-                    resultDiv.innerHTML = '<div class="bg-green-100 text-green-700 p-3 rounded">✅ ' + data.message + '</div>';
-                    document.getElementById('subject').value = '';
-                    document.getElementById('content').value = '';
-                    document.getElementById('attachment_url').value = '';
+                    showMessage('✅ ' + data.message, 'success');
                     
-                    setTimeout(() => location.reload(), 2000);
+                    // Limpiar formulario
+                    document.getElementById('post-content').value = '';
+                    document.getElementById('post-image').value = '';
+                    
+                    // Recargar publicaciones
+                    setTimeout(() => loadPosts(), 500);
                 } else {
-                    resultDiv.innerHTML = `<div class="bg-red-100 text-red-700 p-3 rounded">❌ Error: ${data.error}</div>`;
+                    showMessage('❌ Error: ' + (data.error || 'Error desconocido'), 'error');
                 }
             } catch (error) {
-                resultDiv.innerHTML = `<div class="bg-red-100 text-red-700 p-3 rounded">❌ Error al conectar con el servidor</div>`;
+                console.error('Error:', error);
+                loading.style.display = 'none';
+                showMessage('❌ Error de conexión: ' + error.message, 'error');
             }
-        });
+        }
+        
+        async function loadPosts() {
+            const postsList = document.getElementById('posts-list');
+            const postCount = document.getElementById('post-count');
+            
+            postsList.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p>Cargando publicaciones...</p></div>';
+            
+            try {
+                const response = await fetch('/padlet/api/posts');
+                const data = await response.json();
+                
+                if (data.success && data.posts && data.posts.length > 0) {
+                    postCount.textContent = data.posts.length;
+                    postsList.innerHTML = data.posts.map(post => `
+                        <div class="post">
+                            <h3>${escapeHtml(post.title || 'Sin título')}</h3>
+                            <p>${escapeHtml(post.body || 'Sin contenido')}</p>
+                            ${post.attachment ? `<img src="${escapeHtml(post.attachment)}" alt="Imagen adjunta" onerror="this.style.display='none'">` : ''}
+                            <small>📅 ${new Date(post.created_at).toLocaleString()}</small>
+                            ${post.is_local ? '<small style="color: #667eea;"> 💾 Guardado localmente</small>' : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    postCount.textContent = '0';
+                    postsList.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No hay publicaciones aún. ¡Crea tu primera publicación!</p>';
+                }
+            } catch (error) {
+                console.error('Error cargando posts:', error);
+                postsList.innerHTML = '<div class="error">❌ Error al cargar publicaciones: ' + error.message + '</div>';
+            }
+        }
+        
+        function openPadlet() {
+            const boardId = '<%= boardId %>';
+            window.open(`https://padlet.com/embed/${boardId}`, '_blank');
+        }
+        
+        function showMessage(msg, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = msg;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Cargar publicaciones al iniciar
+        loadPosts();
     </script>
 </body>
 </html>

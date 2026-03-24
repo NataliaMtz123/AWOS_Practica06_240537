@@ -5,9 +5,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'azul-mercado': '#009EE3',      // Color oficial de Mercado Pago
-        'padlet': '#7B68EE',
-        'ia': '#10A37F',
+        'azul-mercado': '#FF69B4',      // Rosa para Mercado Pago
+        'padlet': '#DA70D6',           // Lila para Padlet
+        'ia': '#FFB6C1',               // Rosa claro para IA
         // Mantén tus colores anteriores si los necesitas
         nasa: '#0B3D91',
         inegi: '#2E7D32',
